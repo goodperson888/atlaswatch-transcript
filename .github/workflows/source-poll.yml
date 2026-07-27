@@ -1,6 +1,13 @@
 name: AtlasWatch source polling
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/**"
+      - "app.py"
+      - "requirements.txt"
+      - "Dockerfile"
   schedule:
     - cron: "7,37 * * * *"
   workflow_dispatch:

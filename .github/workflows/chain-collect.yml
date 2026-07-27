@@ -1,6 +1,13 @@
 name: AtlasWatch chain collection
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/**"
+      - "app.py"
+      - "requirements.txt"
+      - "Dockerfile"
   schedule:
     - cron: "3,13,23,33,43,53 * * * *"
   workflow_dispatch:

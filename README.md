@@ -26,3 +26,12 @@ curl "http://127.0.0.1:8080/transcript?videoId=VIDEO_ID&languages=zh-CN,zh,en" \
 - 主站配置同一个 Token 和 `TRANSCRIPT_SIDECAR_URL`。
 - 不要配置 YouTube Cookie；遇到受限、无字幕或地区限制的视频时明确返回不可用。
 - 网络出口比 CPU 更重要；控制调用频率，避免把此服务用于全网批量抓取。
+
+## 定时任务切换
+
+两条 GitHub Actions 默认仍调用旧 Sites 主站，避免 Cloudflare 迁移未验收时中断采集。切换主站时：
+
+1. 将 repository variable `ATLASWATCH_BASE_URL` 设置为新主站 origin，不带末尾 `/`；
+2. 将 repository secret `ATLASWATCH_COLLECTOR_SECRET` 更新为新主站的采集密钥；
+3. Cloudflare 不需要 `ATLASWATCH_SITES_BYPASS_TOKEN`；可在确认不再回滚旧 Sites 后删除；
+4. 手动运行 `AtlasWatch chain collection` 和 `AtlasWatch source polling`，确认两者成功后再保留定时运行。

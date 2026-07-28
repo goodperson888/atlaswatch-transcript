@@ -25,17 +25,21 @@ jobs:
     steps:
       - name: Collect chain facts and outcomes
         env:
+          ATLASWATCH_BASE_URL: ${{ vars.ATLASWATCH_BASE_URL || 'https://atlaswatch-intelligence.mugger-galas-5ruxfot.chatgpt.site' }}
           COLLECTOR_SECRET: ${{ secrets.ATLASWATCH_COLLECTOR_SECRET }}
           SITES_BYPASS_TOKEN: ${{ secrets.ATLASWATCH_SITES_BYPASS_TOKEN }}
         run: |
           test -n "$COLLECTOR_SECRET"
-          test -n "$SITES_BYPASS_TOKEN"
+          EXTRA_HEADERS=()
+          if [ -n "$SITES_BYPASS_TOKEN" ]; then
+            EXTRA_HEADERS+=(--header "OAI-Sites-Authorization: Bearer $SITES_BYPASS_TOKEN")
+          fi
           curl --fail --show-error --silent \
             --retry 2 --retry-delay 10 --retry-all-errors \
             --max-time 480 \
             --request POST \
             --header "Authorization: Bearer $COLLECTOR_SECRET" \
-            --header "OAI-Sites-Authorization: Bearer $SITES_BYPASS_TOKEN" \
+            "${EXTRA_HEADERS[@]}" \
             --header "Content-Type: application/json" \
             --data '{"solanaTargets":[]}' \
-            "https://atlaswatch-intelligence.mugger-galas-5ruxfot.chatgpt.site/api/jobs/collect"
+            "${ATLASWATCH_BASE_URL%/}/api/jobs/collect"

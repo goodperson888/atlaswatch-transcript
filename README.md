@@ -29,9 +29,9 @@ curl "http://127.0.0.1:8080/transcript?videoId=VIDEO_ID&languages=zh-CN,zh,en" \
 
 ## 定时任务切换
 
-两条 GitHub Actions 默认仍调用旧 Sites 主站，避免 Cloudflare 迁移未验收时中断采集。切换主站时：
+Cloudflare 主站已使用原生 Cron，GitHub Actions 当前只保留 `workflow_dispatch` 手动回滚入口，不再周期调用旧 Sites。需要临时手动指向其他主站时：
 
 1. 将 repository variable `ATLASWATCH_BASE_URL` 设置为新主站 origin，不带末尾 `/`；
 2. 将 repository secret `ATLASWATCH_COLLECTOR_SECRET` 更新为新主站的采集密钥；
 3. Cloudflare 不需要 `ATLASWATCH_SITES_BYPASS_TOKEN`；可在确认不再回滚旧 Sites 后删除；
-4. 手动运行 `AtlasWatch chain collection` 和 `AtlasWatch source polling`，确认两者成功后再保留定时运行。
+4. 手动运行 `AtlasWatch chain collection` 和 `AtlasWatch source polling`；不要在 Cloudflare Cron 正常时重新加入 GitHub `schedule`。
